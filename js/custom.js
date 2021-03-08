@@ -69,11 +69,8 @@ $(document).ready(function() {
 			var item_price = $(this).closest('tr').children(":nth-child(3)").text();
 			var current_total = $(".total-price strong").text();
 			var cart_total = parseFloat(current_total.substr(1)) - parseFloat(item_price.substr(1));
-			if(cart_total !== 0) {
-				$(".total-price strong").text('$' + cart_total.toFixed(2));
-			}
-			else {
-				$(".total-price strong").text('$' + cart_total.toFixed(2));
+			$(".total-price strong").text('$' + cart_total.toFixed(2));
+			if (cart_total == 0) {
 				$("#cart-total").attr('style', 'display: none;');
 				$("#checkout").attr('style', 'display: none;');
 				$(".cart-upper").next().attr('style', 'display: none;');
@@ -90,7 +87,7 @@ $(document).ready(function() {
 				$("#view-cart").find("span").attr('style', 'width: 185px;');
 				$("#view-cart").find("i").attr('style', 'width: 75px;');
 			}
-			if($('#cart-items').height() > 206) {
+			if ($('#cart-items').height() > 206) {
 				$(".cart-upper").css('overflowY', 'scroll');
 			}
 			else {
@@ -101,19 +98,23 @@ $(document).ready(function() {
 		var item_count = parseInt($("#item-count").text());
 		$("#item-count").text(--item_count);
 		var item_img_src = $(this).closest('tr').find(".item-img img").attr('src');
-		$(".container").find("a.view-cart-items").each(function() {
-			if($(this).closest(".product-thumb").find(".image img").attr('src') === item_img_src) {
-				$(this).attr('href', 'javascript:void(0);');
-				$(this).find(">:first-child").text('Add to Cart');
-				$(this).removeClass('view-cart-items').addClass('add-cart-item').off('click');
-				return false;
+		$.post("/innovarts/remove-cart-item.php", { "img_src": item_img_src });
+		if ($(".main-image-set").length) {
+			if ($(".main-image-set .changeimg").attr('src') === item_img_src) {
+				$("a#view-cart-items").attr('href', 'javascript:void(0);');
+				$("a#view-cart-items").find(">:first-child").text('Add to Cart');
+				$("a#view-cart-items").attr('id', 'add-cart-item').off('click');
 			}
-		});
-		
-		if($(".main-image-set .changeimg").attr('src') === item_img_src) {
-			$("a#view-cart-items").attr('href', 'javascript:void(0);');
-			$("a#view-cart-items").find(">:first-child").text('Add to Cart');
-			$("a#view-cart-items").attr('id', 'add-cart-item').off('click');
+		}
+		else {
+			$(".container").find("a.view-cart-items").each(function() {
+				if ($(this).closest(".product-thumb").find(".image img").attr('src') === item_img_src) {
+					$(this).attr('href', 'javascript:void(0);');
+					$(this).find(">:first-child").text('Add to Cart');
+					$(this).removeClass('view-cart-items').addClass('add-cart-item').off('click');
+					return false;
+				}
+			});
 		}
 	});
 });
@@ -123,7 +124,6 @@ $(document).ready(function(){
 		var item_count = parseInt($("#item-count").text());
 		++item_count;
 		event.preventDefault();
-		$(this).attr('href', 'cart.php');
 		$(this).find(">:first-child").text('View Cart');
 		if ($(this).is("a.add-cart-item")) {
 			var item_name = $(this).closest(".product-thumb").find(".caption a").text();
@@ -135,6 +135,12 @@ $(document).ready(function(){
 			var item_price = $(this).closest(".product-content").find(".price-list .price-new").text();
 			var item_img_src = $(this).closest(".product-content").find(".thumbnails li:nth-child(2) .galleryimg").attr('src');
 		}
+		$.post("/innovarts/add-cart-item.php",
+		{
+			"item": item_name,
+			"price": item_price,
+			"img_src": item_img_src
+		});
 		var cart_total = $(".total-price strong").text();
 		var cart_total = parseFloat(cart_total.substr(1)) + parseFloat(item_price.substr(1));
 		var cart_item_tr = $("<tr>").attr('id', 'cart-item' + item_count);
@@ -146,7 +152,7 @@ $(document).ready(function(){
 												width: '50'
 											});
 		$(".cart-items tbody").append(cart_item_tr);
-		if($(".cart-items tbody tr:nth-child(2)").attr("id") !== "cart-empty") {
+		if ($(".cart-items tbody tr:nth-child(2)").attr("id") !== "cart-empty") {
 			var child_selector = item_count + 1;
 		}
 		else {
@@ -194,14 +200,16 @@ $(document).ready(function(){
 		$("#checkout").removeAttr("style");
 		$(".cart-upper").next().removeAttr("style").attr('style', 'height: 12px;');
 		if ($(this).is("a.add-cart-item")) {
+			$(this).attr('href', 'cart.php');
 			$(this).removeClass('add-cart-item').addClass('view-cart-items').off('click');
 		}
 		else {
+			$(this).attr('href', '/innovarts/cart.php');
 			$(this).attr('id', 'view-cart-items').off('click');
 		}
 		$("#item-count").text(item_count);
 		$("#dropdown-menu").show();
-		if($('#cart-items').height() > 206) {
+		if ($('#cart-items').height() > 206) {
 			$(".cart-upper").css('overflowY', 'scroll');
 		}
 		else {
