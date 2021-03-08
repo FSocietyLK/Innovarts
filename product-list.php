@@ -123,34 +123,53 @@
                     <div class="col-md-2 col-sm-3 col-xs-5 leftside-remove-space">
                         <div class="btn-group btn-block box-cart">
                             <div id="cart"><img src="images/shopping-cart.png" width="30"/></div>
-                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count">0</span> Items <i class="fa fa-caret-down"></i></span></a>
+                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count"><?php echo count($_SESSION['guest_user_cart']);?></span> Items <i class="fa fa-caret-down"></i></span></a>
                             <ul class="dropdown-menu pull-right btn-block cartView" id="dropdown-menu">
                                 <li>
 									<div class="cart-upper">
 										<table class="table cart-items" id="cart-items">
 											<tbody>
-												<tr id="cart-total" style="display: none;">
+                                        <?php
+                                            if(!empty($_SESSION['guest_user_cart'])) {
+                                                $cart_total = 0;
+                                                foreach($_SESSION['guest_user_cart'] as $key => $item) {
+                                                    $cart_total += substr($item['price'], 1);
+                                        ?>
+                                                <tr id="cart-item<?php echo $key;?>">
+                                                    <td class="text-center item-img">
+                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                    </td>
+                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
+                                                    <td class="product-remove text-center">
+                                                        <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
+                                                    </td>
+                                                </tr>
+                                        <?php   }
+                                            }   ?>
+												<tr id="cart-total" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
 													<td class="text-left cart-total"><strong>Total</strong></td>
 													<td></td>
-													<td class="text-left cart-total total-price"><strong>$0.00</strong></td>
+													<td class="text-left cart-total total-price"><strong><?php if(!empty($_SESSION['guest_user_cart'])) echo "$".number_format((float)$cart_total, 2); else echo "$0.00"; ?></strong></td>
 													<td></td>
 												</tr>
+                                    <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
 													<td class="text-center" colspan="4" style="padding-top: 16px;">
 														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
 													</td>
 												</tr>
+                                    <?php   }   ?>
                                             </tbody></table>
 									</div>
-									<div style="display: none;"></div>
+									<div style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;'; else echo 'height: 12px;';?>"></div>
 									<div class="cart-lower">
-                                        <a href="cart.php" class="btn btn-add-cart" id="view-cart" type="button" style="width: 260px;">
-                                            <span style="width: 185px;">
+                                        <a href="cart.php" class="btn btn-add-cart" id="view-cart" type="button" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 260px;';?>">
+                                            <span style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 185px;';?>">
                                                 View </span>
-                                            <i class="fa fa-shopping-cart" style="width: 75px;"></i>
+                                            <i class="fa fa-shopping-cart" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 75px;';?>"></i>
                                         </a>
-
-                                        <a href="checkout.php" class="btn btn-add-cart" id="checkout" type="button" style="display: none;">
+                                        <a href="checkout.php" class="btn btn-add-cart" id="checkout" type="button" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
                                             <span>
                                                 Checkout </span>
                                             <i class="fa fa-share"></i> 
@@ -215,7 +234,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/74861/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/74861/"><img src="/innovarts/product/artwork/74861/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a>Texture Design</a></div>
                                                     <div class="price">
@@ -238,7 +257,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/40784/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/40784/"><img src="/innovarts/product/artwork/40784/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a>Soft Panting </a></div>
                                                     <div class="price">
@@ -272,7 +291,7 @@
                         </ul>
                         <h2>Texture Design</h2>
                         <div class="row ref-search">
-                            <div class="col-sm-2 col-xs-12"><img class="img-thumbnail" src="product/artwork/33660/main.jpg"></div>
+                            <div class="col-sm-2 col-xs-12"><img class="img-thumbnail" src="/innovarts/product/artwork/33660/main.jpg"></div>
                             <div class="col-sm-10 col-xs-12"><p>
                                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting</p>
                             </div>
@@ -343,7 +362,7 @@
                             <div class="product-layout product-list col-xs-12">
                                 <div class="product-thumb">
                                     <div class="image">
-                                        <a href="single-product.php"><img class="img-responsive" src="product/artwork/50773/main.jpg"></a></div>
+                                        <a href="/innovarts/product/artwork/50773/"><img class="img-responsive" src="/innovarts/product/artwork/50773/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
                                             <h4><a href="single-product.php">Painting</a></h4>
@@ -364,7 +383,7 @@
                             <div class="product-layout product-list col-xs-12">
                                 <div class="product-thumb">
                                     <div class="image">
-                                        <a href="single-product.php"><img class="img-responsive" src="product/artwork/21083/main.jpg"></a></div>
+                                        <a href="/innovarts/product/artwork/21083/"><img class="img-responsive" src="/innovarts/product/artwork/21083/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
                                             <h4><a href="single-product.php">Laterica</a></h4>
@@ -385,7 +404,7 @@
                             <div class="product-layout product-list col-xs-12">
                                 <div class="product-thumb">
                                     <div class="image">
-                                        <a href="single-product.php"><img class="img-responsive" src="product/artwork/88310/main.jpg"></a></div>
+                                        <a href="/innovarts/product/artwork/88310/"><img class="img-responsive" src="/innovarts/product/artwork/88310/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
                                             <h4><a href="single-product.php">Painting Softness</a></h4>
@@ -406,7 +425,7 @@
                             <div class="product-layout product-list col-xs-12">
                                 <div class="product-thumb">
                                     <div class="image">
-                                        <a href="single-product.php"><img class="img-responsive" src="product/artwork/25467/main.jpg"></a></div>
+                                        <a href="/innovarts/product/artwork/76253/"><img class="img-responsive" src="/innovarts/product/artwork/76253/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
                                             <h4><a href="single-product.php">Painting Like</a></h4>

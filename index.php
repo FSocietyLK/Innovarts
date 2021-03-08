@@ -1,4 +1,4 @@
-<?php session_start();?>
+<?php if (!isset($_SESSION)) session_start();?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,16 +15,6 @@
         <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
         <script src="js/custom.js" type="text/javascript"></script>
-		<script type="text/javascript">
-			$(document).ready(function() {
-				$(document).on("click", ".caption a, .image img", function() {
-					var item_name = $(this).closest(".product-thumb").find(".caption a").text();
-					var item_price = $(this).closest(".product-thumb").find(".price-new").text();
-					var item_img_src = $(this).closest(".product-thumb").find(".image img").attr('src');
-					
-				});
-			});
-		</script>
     </head>
     <body>
         <!--headerblock-->
@@ -132,34 +122,53 @@
                     <div class="col-md-2 col-sm-3 col-xs-5 leftside-remove-space">
                         <div class="btn-group btn-block box-cart">
                             <div id="cart"><img src="images/shopping-cart.png" width="30"/></div>
-                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count">0</span> Items <i class="fa fa-caret-down"></i></span></a>
+                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count"><?php echo count($_SESSION['guest_user_cart']);?></span> Items <i class="fa fa-caret-down"></i></span></a>
                             <ul class="dropdown-menu pull-right btn-block cartView" id="dropdown-menu">
                                 <li>
 									<div class="cart-upper">
 										<table class="table cart-items" id="cart-items">
 											<tbody>
-												<tr id="cart-total" style="display: none;">
+                                        <?php
+                                            if(!empty($_SESSION['guest_user_cart'])) {
+                                                $cart_total = 0;
+                                                foreach($_SESSION['guest_user_cart'] as $key => $item) {
+                                                    $cart_total += substr($item['price'], 1);
+                                        ?>
+                                                <tr id="cart-item<?php echo $key;?>">
+                                                    <td class="text-center item-img">
+                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                    </td>
+                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
+                                                    <td class="product-remove text-center">
+                                                        <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
+                                                    </td>
+                                                </tr>
+                                        <?php   }
+                                            }   ?>
+												<tr id="cart-total" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
 													<td class="text-left cart-total"><strong>Total</strong></td>
 													<td></td>
-													<td class="text-left cart-total total-price"><strong>$0.00</strong></td>
+													<td class="text-left cart-total total-price"><strong><?php if(!empty($_SESSION['guest_user_cart'])) echo "$".number_format((float)$cart_total, 2); else echo "$0.00"; ?></strong></td>
 													<td></td>
 												</tr>
+                                    <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
 													<td class="text-center" colspan="4" style="padding-top: 16px;">
 														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
 													</td>
 												</tr>
+                                    <?php   }   ?>
                                             </tbody></table>
 									</div>
-									<div style="display: none;"></div>
+									<div style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;'; else echo 'height: 12px;';?>"></div>
 									<div class="cart-lower">
-                                        <a href="cart.php" class="btn btn-add-cart" id="view-cart" type="button" style="width: 260px;">
-                                            <span style="width: 185px;">
+                                        <a href="cart.php" class="btn btn-add-cart" id="view-cart" type="button" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 260px;';?>">
+                                            <span style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 185px;';?>">
                                                 View </span>
-                                            <i class="fa fa-shopping-cart" style="width: 75px;"></i>
+                                            <i class="fa fa-shopping-cart" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 75px;';?>"></i>
                                         </a>
-
-                                        <a href="checkout.php" class="btn btn-add-cart" id="checkout" type="button" style="display: none;">
+                                        <a href="checkout.php" class="btn btn-add-cart" id="checkout" type="button" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
                                             <span>
                                                 Checkout </span>
                                             <i class="fa fa-share"></i> 
@@ -213,6 +222,41 @@
                                 </div>
                             </div>
                         </div>
+						<!--slidder for small screens--->
+                        <div class="slidder" id="slidder-sm">
+                            <div id="myCarousel-sm" class="carousel slide" data-ride="carousel">
+                                <!-- Indicators -->
+                                <ol class="carousel-indicators">
+                                    <li data-target="#myCarousel-sm" data-slide-to="0" class="active"></li>
+                                    <li data-target="#myCarousel-sm" data-slide-to="1"></li>
+                                    <li data-target="#myCarousel-sm" data-slide-to="2"></li>
+                                </ol>
+
+                                <!-- wrapper for slides -->
+                                <div class="carousel-inner" role="listbox">
+                                    <div class="item active">
+                                        <img src="images/banner1.jpg" class="img-responsive" alt="1">
+                                    </div>
+
+                                    <div class="item">
+                                        <img src="images/banner2.jpg" class="img-responsive" alt="2">
+                                    </div>
+
+                                    <div class="item">
+                                        <img src="images/banner3.jpg" class="img-responsive" alt="3">
+                                    </div>
+                                </div>
+                                <!-- controls -->
+                                <a class="left carousel-control" href="#myCarousel-sm" role="button" data-slide="prev">
+                                    <i class="fa fa-chevron-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="right carousel-control" href="#myCarousel-sm" role="button" data-slide="next">
+                                    <i class="fa fa-chevron-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+                        </div>
                         <div class="box special">
                             <div class="box-heading">
                                 <h3>Special</h3>
@@ -224,7 +268,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/26681/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/53193/"><img src="/innovarts/product/artwork/53193/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a href="single-product.php">Texture Design</a></div>
                                                     <div class="price">
@@ -246,7 +290,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/74861/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/74861/"><img src="/innovarts/product/artwork/74861/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a href="single-product.php">Texture Design</a></div>
                                                     <div class="price">
@@ -268,7 +312,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/47818/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/47818/"><img src="/innovarts/product/artwork/47818/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a>Texture Paint</a></div>
                                                     <div class="price">
@@ -290,7 +334,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/51051/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/27344/"><img src="/innovarts/product/artwork/27344/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a href="single-product.php">Texture Gallery Design</a></div>
                                                     <div class="price">
@@ -313,7 +357,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/55307/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/55307/"><img src="/innovarts/product/artwork/55307/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a href="single-product.php">Texture Design</a></div>
                                                     <div class="price">
@@ -335,7 +379,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="product/artwork/68418/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/68418/"><img src="/innovarts/product/artwork/68418/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a href="single-product.php">Smart Painting</a></div>
                                                     <div class="price">
@@ -363,17 +407,17 @@
 
                     <!--main content-->
                     <div id="content" class="col-sm-9">
-                        <!--slidder--->
-                        <div class="slidder">
+                        <!--slidder for large screens--->
+                        <div class="slidder" id="slidder">
                             <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                                <!-- Indicators -->
+                                <!-- indicators -->
                                 <ol class="carousel-indicators">
                                     <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
                                     <li data-target="#myCarousel" data-slide-to="1"></li>
                                     <li data-target="#myCarousel" data-slide-to="2"></li>
                                 </ol>
 
-                                <!-- Wrapper for slides -->
+                                <!-- wrapper for slides -->
                                 <div class="carousel-inner" role="listbox">
                                     <div class="item active">
                                         <img src="images/banner1.jpg" class="img-responsive" alt="1">
@@ -387,7 +431,7 @@
                                         <img src="images/banner3.jpg" class="img-responsive" alt="3">
                                     </div>
                                 </div>
-                                <!-- Controls -->
+                                <!-- controls -->
                                 <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
                                     <i class="fa fa-chevron-left"></i>
                                     <span class="sr-only">Previous</span>
@@ -398,36 +442,7 @@
                                 </a>
                             </div>
                         </div>
-
-                        <!--banner images-->
-                        <div class="banner-image-block row">
-
-                            <div class="col-sm-4 col-xs-12">
-                                <div class="product-thumb transiction">
-                                    <div class="banner-image">
-                                        <a href="single-product.php"><img src="product/artwork/53351/main.jpg" class="img-responsive"></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-4 col-xs-12">
-                                <div class="product-thumb transiction">
-                                    <div class="banner-image">
-                                        <a href="single-product.php"><img src="product/artwork/22210/main.jpg" class="img-responsive"></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-4 col-xs-12">
-                                <div class="product-thumb transiction">
-                                    <div class="banner-image">
-                                        <a href="single-product.php"><img src="product/artwork/25512/main.jpg" class="img-responsive"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-                        <div class="clearfix"></div>
-                        <!--end banner images-->
+                        <!--end slidder-->
 
                         <!---featured image-->
                         <div class="box featured-product featured-product-heading">
@@ -440,7 +455,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/21083/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/21083/"><img src="/innovarts/product/artwork/21083/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Texture Design</a></div>
                                                 <div class="price">
@@ -462,7 +477,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/25327/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/25327/"><img src="/innovarts/product/artwork/25327/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Laterica</a></div>
                                                 <div class="price">
@@ -484,7 +499,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/29968/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/29968/"><img src="/innovarts/product/artwork/29968/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Smart Paint</a></div>
                                                 <div class="price">
@@ -506,7 +521,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/33312/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/33312/"><img src="/innovarts/product/artwork/33312/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php"> Folk Art </a></div>
                                                 <div class="price">
@@ -528,7 +543,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/33660/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/33660/"><img src="/innovarts/product/artwork/33660/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Texture Pattern</a></div>
                                                 <div class="price">
@@ -550,7 +565,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/50773/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/50773/"><img src="/innovarts/product/artwork/50773/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Easy Paint</a></div>
                                                 <div class="price">
@@ -572,7 +587,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/51986/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/51986/"><img src="/innovarts/product/artwork/51986/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Texture Design</a></div>
                                                 <div class="price">
@@ -593,7 +608,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/52873/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/52873/"><img src="/innovarts/product/artwork/52873/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">HD Paint</a></div>
                                                 <div class="price">
@@ -614,7 +629,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/53193/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/22210/"><img src="/innovarts/product/artwork/22210/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Auscipit Dissentiet</a></div>
                                                 <div class="price">
@@ -648,7 +663,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/65286/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/65286/"><img src="/innovarts/product/artwork/65286/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Paint Design</a></div>
@@ -671,7 +686,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/76253/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/76253/"><img src="/innovarts/product/artwork/76253/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Paint Hard</a></div>
@@ -694,7 +709,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/95316/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/92948/"><img src="/innovarts/product/artwork/92948/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Paint Easy Note</a></div>
@@ -718,7 +733,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/27344/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/27344/"><img src="/innovarts/product/artwork/27344/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Paint Design Wall Art</a></div>
@@ -741,7 +756,7 @@
                                         <div class="product-thumb transiction">
                                             <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/93330/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/25512/"><img src="/innovarts/product/artwork/25512/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
                                                 <div class="product-name"><a href="single-product.php">Easy Painting</a></div>

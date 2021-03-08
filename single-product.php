@@ -1,3 +1,4 @@
+<?php require 'connect.php';?>
 <?php session_start();?>
 <!DOCTYPE html>
 <html>
@@ -5,18 +6,18 @@
         <title>InnovArts</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="images/favicon.png">
+        <link rel="icon" href="/innovarts/images/favicon.png">
         <!--custom css-->
-        <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-        <link href="css/style.css" rel="stylesheet" type="text/css" />
-        <link href="css/responsive.css" rel="stylesheet" type="text/css" />
-        <link href="js/bxslider/bxslider.css" rel="stylesheet" type="text/css" />
+        <link href="/innovarts/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/innovarts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="/innovarts/css/style.css" rel="stylesheet" type="text/css" />
+        <link href="/innovarts/css/responsive.css" rel="stylesheet" type="text/css" />
+        <link href="/innovarts/js/bxslider/bxslider.css" rel="stylesheet" type="text/css" />
         <!--js --->
-        <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
-        <script src="js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="js/custom.js" type="text/javascript"></script>
-        <script src="js/bxslider/bxslider.js" type="text/javascript"></script>
+        <script src="/innovarts/js/jquery-2.1.1.min.js" type="text/javascript"></script>
+        <script src="/innovarts/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="/innovarts/js/custom.js" type="text/javascript"></script>
+        <script src="/innovarts/js/bxslider/bxslider.js" type="text/javascript"></script>
     </head>
     <body class="checkout-cart">
         <!--header block-->
@@ -70,8 +71,8 @@
                                     <i class="fa fa-user"></i> 
                                 </span>
                                 <ul class="dropdown-menu">
-                                    <li><a href="login.php">Login</a></li>
-                                    <li><a href="register.php">Register</a></li>  
+                                    <li><a href="/innovarts/login.php">Login</a></li>
+                                    <li><a href="/innovarts/register.php">Register</a></li>  
                                 </ul>
                             </div>
                         </div>
@@ -82,7 +83,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="index.php"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/index.php"><img src="/innovarts/images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -110,9 +111,9 @@
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li><a href="index.php">Home</a></li>
+                                        <li><a href="/innovarts/index.php">Home</a></li>
                                         <li><a>About Us</a></li>
-                                        <li><a href="product.php">Gallery</a></li>                               
+                                        <li><a href="/innovarts/product.php">Gallery</a></li>                               
                                         <li><a>Contact</a></li>
                                     </ul>
                                 </div>
@@ -121,35 +122,54 @@
                     </div>
                     <div class="col-md-2 col-sm-3 col-xs-5 leftside-remove-space">
                         <div class="btn-group btn-block box-cart">
-                            <div id="cart"><img src="images/shopping-cart.png" width="30"/></div>
-                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count">0</span> Items <i class="fa fa-caret-down"></i></span></a>
+                            <div id="cart"><img src="/innovarts/images/shopping-cart.png" width="30"/></div>
+                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count"><?php echo count($_SESSION['guest_user_cart']);?></span> Items <i class="fa fa-caret-down"></i></span></a>
                             <ul class="dropdown-menu pull-right btn-block cartView" id="dropdown-menu">
                                 <li>
 									<div class="cart-upper">
 										<table class="table cart-items" id="cart-items">
 											<tbody>
-												<tr id="cart-total" style="display: none;">
+                                        <?php
+                                            if (!empty($_SESSION['guest_user_cart'])) {
+                                                $cart_total = 0;
+                                                foreach ($_SESSION['guest_user_cart'] as $key => $item) {
+                                                    $cart_total += substr($item['price'], 1);
+                                        ?>
+                                                <tr id="cart-item<?php echo $key;?>">
+                                                    <td class="text-center item-img">
+                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                    </td>
+                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
+                                                    <td class="product-remove text-center">
+                                                        <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
+                                                    </td>
+                                                </tr>
+                                        <?php   }
+                                            }   ?>
+												<tr id="cart-total" style="<?php if (empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
 													<td class="text-left cart-total"><strong>Total</strong></td>
 													<td></td>
-													<td class="text-left cart-total total-price"><strong>$0.00</strong></td>
+													<td class="text-left cart-total total-price"><strong><?php if (!empty($_SESSION['guest_user_cart'])) echo "$".number_format((float)$cart_total, 2); else echo "$0.00"; ?></strong></td>
 													<td></td>
 												</tr>
+                                    <?php   if (empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
 													<td class="text-center" colspan="4" style="padding-top: 16px;">
 														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
 													</td>
 												</tr>
+                                    <?php   }   ?>
                                             </tbody></table>
 									</div>
-									<div style="display: none;"></div>
+									<div style="<?php if (empty($_SESSION['guest_user_cart'])) echo 'display: none;'; else echo 'height: 12px;';?>"></div>
 									<div class="cart-lower">
-                                        <a href="cart.php" class="btn btn-add-cart" id="view-cart" type="button" style="width: 260px;">
-                                            <span style="width: 185px;">
+                                        <a href="/innovarts/cart.php" class="btn btn-add-cart" id="view-cart" type="button" style="<?php if (empty($_SESSION['guest_user_cart'])) echo 'width: 260px;';?>">
+                                            <span style="<?php if (empty($_SESSION['guest_user_cart'])) echo 'width: 185px;';?>">
                                                 View </span>
-                                            <i class="fa fa-shopping-cart" style="width: 75px;"></i>
+                                            <i class="fa fa-shopping-cart" style="<?php if (empty($_SESSION['guest_user_cart'])) echo 'width: 75px;';?>"></i>
                                         </a>
-
-                                        <a href="checkout.php" class="btn btn-add-cart" id="checkout" type="button" style="display: none;">
+                                        <a href="/innovarts/checkout.php" class="btn btn-add-cart" id="checkout" type="button" style="<?php if (empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
                                             <span>
                                                 Checkout </span>
                                             <i class="fa fa-share"></i> 
@@ -178,27 +198,27 @@
                             <div class="box-content test">
                                 <div class="box-category">
                                     <ul class="menu">
-                                        <li><a href="product.php" class="custom_hover">Painting</a>
+                                        <li><a href="/innovarts/product.php" class="custom_hover">Painting</a>
                                             <i class="fa fa-plus"></i>
                                             <ul>
                                                 <li>
-                                                    <a class="parent" href="product.php">Oil Painting</a><i class="fa fa-plus"></i>
+                                                    <a class="parent" href="/innovarts/product.php">Oil Painting</a><i class="fa fa-plus"></i>
                                                     <ul>
-                                                        <li><a href="product.php">Aliquam eget</a></li>
-                                                        <li><a href="product.php">Lorem ipsum</a></li>
+                                                        <li><a href="/innovarts/product.php">Aliquam eget</a></li>
+                                                        <li><a href="/innovarts/product.php">Lorem ipsum</a></li>
                                                     </ul>
                                                 </li>
                                                 <li>
-                                                    <a href="product.php">Acrylic Painting</a>
+                                                    <a href="/innovarts/product.php">Acrylic Painting</a>
                                                 </li>
                                             </ul>
                                         </li>
-                                        <li><a href="product.php" class="custom_hover">New Media</a></li>
-                                        <li><a href="product.php" class="custom_hover">Drawing</a></li>
-                                        <li><a href="product.php" class="custom_hover">Fine art</a></li>
-										<li><a href="product.php" class="custom_hover">Craft</a></li>
-                                        <li><a href="product.php" class="custom_hover">Photography</a></li>
-                                        <li><a href="product.php" class="custom_hover">Decorative art</a></li>
+                                        <li><a href="/innovarts/product.php" class="custom_hover">New Media</a></li>
+                                        <li><a href="/innovarts/product.php" class="custom_hover">Drawing</a></li>
+                                        <li><a href="/innovarts/product.php" class="custom_hover">Fine art</a></li>
+										<li><a href="/innovarts/product.php" class="custom_hover">Craft</a></li>
+                                        <li><a href="/innovarts/product.php" class="custom_hover">Photography</a></li>
+                                        <li><a href="/innovarts/product.php" class="custom_hover">Decorative art</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -214,7 +234,7 @@
                                             <div class="product-thumb transiction">
                                                 <a class="compare-button"><i class="fa fa-retweet"></i></a>
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php" id="img1-specials"><img src="product/artwork/74861/main.jpg" class="img-responsive"></a></div>
+                                                <div class="image"><a href="/innovarts/product/artwork/36182/" id="img1-specials"><img src="/innovarts/product/artwork/36182/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
                                                     <div class="product-name"><a>Texture Design</a></div>
                                                     <div class="price">
@@ -243,33 +263,48 @@
                     <!--main content-->
                     <div class="col-sm-9 single-product" id="content">
                         <ul class="breadcrumb">
-                            <li><a href="index.php"><i class="fa fa-home"></i></a></li>
-                            <li><a href="single-product.php">Single Product</a></li>
+                            <li><a href="/innovarts/index.php"><i class="fa fa-home"></i></a></li>
+                            <li><a href="<?php echo $_SERVER['REQUEST_URI'];?>">Single Product</a></li>
                         </ul>
                         <div class="row product-content">
+							<?php
+								$item_id = basename($_SERVER['REQUEST_URI']);
+								$query = "SELECT * FROM `innovarts`.`product` WHERE `item_id`='$item_id'";
+								$result = mysqli_query($con, $query);
+								if (mysqli_num_rows($result) != 0){
+                                    $row = mysqli_fetch_array($result);
+                                    $item_name = $row['item_name'];
+                                    $price_new = $row['price_new'];
+                                    $price_old = $row['price_old'];
+                                    $main_img_src = $row['main_img_src'];
+                                    $product_type = $row['product_type'];
+                                    $availability = $row['availability'];
+								}
+								else {
+									header('HTTP/1.1 403 Forbidden');
+								}
+							?>
                             <div class="col-sm-9">
                                 <ul class="thumbnails list-unstyled">
-                                    <li class="main-image-set"><a class="thumbnail"><img src="images/pro1.jpg" class="changeimg"></a></li>
-                                    <li class="image-additional"><a class="thumbnail"> <img class="galleryimg" src="images/pro1.jpg"></a></li>
-                                    <li class="image-additional"><a class="thumbnail"> <img class="galleryimg" src="images/pro2.jpg"></a></li>
-                                    <li class="image-additional"><a class="thumbnail"> <img class="galleryimg" src="images/pro3.jpg"></a></li>
-                                    <li class="image-additional"><a class="thumbnail"> <img class="galleryimg" src="images/pro4.jpg"></a></li>
+                                    <li class="main-image-set"><a class="thumbnail"><img src="<?php echo $main_img_src;?>" class="changeimg"></a></li>
+                                    <li class="image-additional"><a class="thumbnail"><img class="galleryimg" src="<?php echo $main_img_src;?>"></a></li>
+                                    <li class="image-additional"><a class="thumbnail"><img class="galleryimg" src="/innovarts/images/pro2.jpg"></a></li>
+                                    <li class="image-additional"><a class="thumbnail"><img class="galleryimg" src="/innovarts/images/pro3.jpg"></a></li>
+                                    <li class="image-additional"><a class="thumbnail"><img class="galleryimg" src="/innovarts/images/pro4.jpg"></a></li>
                                 </ul>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="col-sm-10">
-                                <h1>Texture Design</h1>
-
+                                <h1><?php echo $item_name;?></h1>
                                 <ul class="list-unstyled product-info">
-                                    <li>Brand: <a>Art</a></li>
-                                    <li>Product Code: Product 3</li>
+                                    <li>Product Type: <a><?php echo $product_type;?></a></li>
+                                    <li>Product Code: <?php echo $item_id;?></li>
                                     <li>Reward Points: 200</li>
-                                    <li>Availability: In Stock</li>
+                                    <li>Availability: <?php echo $availability;?></li>
                                 </ul>
                                 <ul class="list-unstyled price-list">
-                                    <li><span class="price-old">$122.00</span>
-
-                                        <span class="price-new">$98.00</span>
+                                    <li><span class="price-old" <?php if(empty($price_old)) echo "style='display: none;'";?>><?php echo $price_old;?></span>
+                                        <span class="price-new"><?php echo $price_new;?></span>
                                     </li>
                                     <li class="text-right text-color-g">Ex Tax: $80.00</li>
                                 </ul>
@@ -292,7 +327,16 @@
                                     </div>
                                     <div class="add-block-one row">
                                         <div class="col-md-4 col-sm-6 col-xs-12 text-left">
-                                            <a class="btn btn-add-cart" id="add-cart-item" href="javascript:void(0);"><span>Add to Cart</span><i class="fa fa-shopping-cart"></i></a>  
+                                        <?php
+                                            $exists = false;
+                                            if (isset($_SESSION['guest_user_cart'])) {
+                                                foreach ($_SESSION['guest_user_cart'] as $key => $item) {
+                                                    if ($item['img_src'] == $main_img_src)
+                                                        $exists = true;
+                                                }
+                                            }
+                                        ?>
+                                            <a class="btn btn-add-cart" id="<?php if ($exists) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($exists) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>"><span><?php if ($exists) echo 'View Cart'; else echo 'Add to Cart';?></span><i class="fa fa-shopping-cart"></i></a>  
                                         </div>
                                         <div class="col-md-8 col-sm-6 col-xs-12 text-left">
                                             <a class="btn-wishlist"><i class="fa fa-heart"></i> Add to Wish List</a>
@@ -375,9 +419,9 @@
                                 <ul class="related-slider">
                                     <li class="slide-wrap-img">
                                         <div class="product-thumb transiction">
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/75766/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/75766/"><img src="/innovarts/product/artwork/75766/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Texture design</a></div>
+                                                <div class="product-name"><a href="/innovartssingle-product.php">Texture design</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$34.90</span>
                                                     <span class="price-old">$49.50</span>
@@ -395,9 +439,9 @@
                                     </li>
                                     <li class="slide-wrap-img">
                                         <div class="product-thumb transiction">
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/47818/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/47818/"><img src="/innovarts/product/artwork/47818/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Ationixcc</a></div>
+                                                <div class="product-name"><a href="/innovarts/single-product.php">Ationixcc</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$34.90</span>
                                                     <span class="price-old">$49.50</span>
@@ -415,9 +459,9 @@
                                     </li>
                                     <li class="slide-wrap-img">
                                         <div class="product-thumb transiction">
-                                            <div class="image"><a href="single-product.php"><img src="product/artwork/68418/main.jpg" class="img-responsive"></a></div>
+                                            <div class="image"><a href="/innovarts/product/artwork/68418/"><img src="/innovarts/product/artwork/68418/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Smart paint</a></div>
+                                                <div class="product-name"><a href="/innovarts/single-product.php">Smart paint</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$34.90</span>
                                                     <span class="price-old">$49.50</span>
@@ -550,6 +594,12 @@
                     moveSlides: 1
                 });
             });
+			
+			/* $(document).ready(function () {
+				$(".price-list .price-old").filter(function () {
+					return ($(this).is(':empty'))
+				}).hide();
+			}); */
         </script>
     </body>
 </html>
