@@ -50,6 +50,12 @@ $(document).ready(function () {
 $(document).ready(function () {
     $("#dropdown-toggle, #cart").click(function (event) {
             $("#dropdown-menu").toggle();
+			if ($('#cart-items').height() > 206) {
+				$(".cart-upper").css('overflowY', 'scroll');
+			}
+			else {
+				$(".cart-upper").css('overflowY', 'auto');
+			}
 			event.stopPropagation();
     });
 	
@@ -93,6 +99,10 @@ $(document).ready(function() {
 			else {
 				$(".cart-upper").css('overflowY', 'auto');
 			}
+			if(window.location.pathname === "/innovarts/cart.php") {
+				document.cookie = "reload=true; path=/innovarts/cart.php";
+				location.reload();
+			}
 		});
 		
 		var item_count = parseInt($("#item-count").text());
@@ -106,16 +116,16 @@ $(document).ready(function() {
 				$("a#view-cart-items").attr('id', 'add-cart-item').off('click');
 			}
 		}
-		else {
-			$(".container").find("a.view-cart-items").each(function() {
-				if ($(this).closest(".product-thumb").find(".image img").attr('src') === item_img_src) {
-					$(this).attr('href', 'javascript:void(0);');
-					$(this).find(">:first-child").text('Add to Cart');
-					$(this).removeClass('view-cart-items').addClass('add-cart-item').off('click');
-					return false;
+		$(".container").find("a.view-cart-items").each(function() {
+			if ($(this).closest(".product-thumb").find(".image img").attr('src') === item_img_src) {
+				$(this).attr('href', 'javascript:void(0);');
+				$(this).find(">:first-child").text('Add to Cart');
+				$(this).removeClass('view-cart-items').addClass('add-cart-item').off('click');
+				if(!$("li.bx-clone").length) {
+					return false;		//break
 				}
-			});
-		}
+			}
+		});
 	});
 });
 
@@ -124,6 +134,7 @@ $(document).ready(function(){
 		var item_count = parseInt($("#item-count").text());
 		++item_count;
 		event.preventDefault();
+		$(this).attr('href', '/innovarts/cart.php');
 		$(this).find(">:first-child").text('View Cart');
 		if ($(this).is("a.add-cart-item")) {
 			var item_name = $(this).closest(".product-thumb").find(".caption a").text();
@@ -143,9 +154,10 @@ $(document).ready(function(){
 		});
 		var cart_total = $(".total-price strong").text();
 		var cart_total = parseFloat(cart_total.substr(1)) + parseFloat(item_price.substr(1));
+		var base_path = item_img_src.substring(0, item_img_src.lastIndexOf('/') + 1);
 		var cart_item_tr = $("<tr>").attr('id', 'cart-item' + item_count);
 		var cart_item_td = $("<td>").attr('class', 'text-center item-img');
-		var cart_item_a = $("<a>").attr('href', 'single-product.php');
+		var cart_item_a = $("<a>").attr('href', base_path);
 		var cart_item_img = $("<img>").attr({	class: 'img-responsive',
 												title: item_name,
 												src: item_img_src,
@@ -162,7 +174,7 @@ $(document).ready(function(){
 		$(".cart-items tbody tr:nth-child(" + child_selector + ") .item-img").append(cart_item_a);
 		$(".cart-items tbody tr:nth-child(" + child_selector + ") .item-img a").append(cart_item_img);
 		var cart_item_td2 = $("<td>").attr('class', 'text-left');
-		var cart_item_a2 = $("<a>").attr({	href: 'single-product.php',
+		var cart_item_a2 = $("<a>").attr({	href: base_path,
 											class: 'view_cart cart-product-name'
 										}).text(item_name);
 		$(".cart-items tbody tr:nth-child(" + child_selector + ")").append(cart_item_td2);
@@ -200,12 +212,19 @@ $(document).ready(function(){
 		$("#checkout").removeAttr("style");
 		$(".cart-upper").next().removeAttr("style").attr('style', 'height: 12px;');
 		if ($(this).is("a.add-cart-item")) {
-			$(this).attr('href', 'cart.php');
 			$(this).removeClass('add-cart-item').addClass('view-cart-items').off('click');
 		}
 		else {
-			$(this).attr('href', '/innovarts/cart.php');
 			$(this).attr('id', 'view-cart-items').off('click');
+		}
+		if($("li.bx-clone").length) {
+			$(".bx-wrapper").find("a.add-cart-item").each(function() {
+				if ($(this).closest(".product-thumb").find(".image img").attr('src') === item_img_src) {
+					$(this).attr('href', '/innovarts/cart.php');
+					$(this).find(">:first-child").text('View Cart');
+					$(this).removeClass('add-cart-item').addClass('view-cart-items').off('click');
+				}
+			});
 		}
 		$("#item-count").text(item_count);
 		$("#dropdown-menu").show();
@@ -216,5 +235,9 @@ $(document).ready(function(){
 			$(".cart-upper").css('overflowY', 'auto');
 		}
 		event.stopPropagation();
+		if(window.location.pathname === "/innovarts/cart.php") {
+			document.cookie = "reload=true; path=/innovarts/cart.php";
+			location.reload();
+		}
 	});
 });
