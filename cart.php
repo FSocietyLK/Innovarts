@@ -1,4 +1,5 @@
-<?php session_start();?>
+<?php require 'connect.php';?>
+<?php if (!isset($_SESSION)) session_start();?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,6 +16,7 @@
         <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
         <script src="js/custom.js" type="text/javascript"></script>
+        <script src="js/cart-animate.js" type="text/javascript"></script>
     </head>
     <body class="checkout-cart">
         <!--headerblock-->
@@ -80,7 +82,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="index.php"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -110,7 +112,7 @@
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li class="active"><a href="index.php">Home</a></li>
+                                        <li><a href="/innovarts/">Home</a></li>
                                         <li><a>About Us</a></li>
                                         <li><a href="product.php">Gallery</a></li>
                                         <li><a>Contact</a></li>
@@ -136,9 +138,9 @@
                                         ?>
                                                 <tr id="cart-item<?php echo $key;?>">
                                                     <td class="text-center item-img">
-                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                        <a href="<?php echo dirname($item['img_src']);?>"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
                                                     </td>
-                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left"><a href="<?php echo dirname($item['img_src']);?>" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
                                                     <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
                                                     <td class="product-remove text-center">
                                                         <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
@@ -154,8 +156,8 @@
 												</tr>
                                     <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
-													<td class="text-center" colspan="4" style="padding-top: 16px;">
-														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
+													<td class="text-center" colspan="4">
+														<strong>Your cart is empty!</strong>
 													</td>
 												</tr>
                                     <?php   }   ?>
@@ -187,6 +189,21 @@
         <!--middle content-->
         <div id="container">
             <div class="container">
+            <?php
+                if (isset($_SESSION['guest_user_cart']) && !empty($_SESSION['guest_user_cart'])) {
+                    $item_id = array();
+                    foreach ($_SESSION['guest_user_cart'] as $key => $item) {
+                        $img_src = $item['img_src'];
+                        $query = "SELECT `item_id` FROM `innovarts`.`product` WHERE `main_img_src`='$img_src'";
+                        $result = mysqli_query($con, $query);
+                        if (mysqli_num_rows($result) != 0){
+                            $row = mysqli_fetch_array($result);
+                            $id = $row['item_id'];
+                            $item_id[$id] = true;
+                        }
+                    }
+                }
+            ?>
                 <div class="row">
                     <!--left sidebar---->
                     <aside  class="col-sm-3 left-sidebar">
@@ -194,7 +211,6 @@
                             <div class="box-heading">
                                 <h3>Categories <i class="fa fa-angle-up"></i></h3>
                             </div>
-
                             <div class="box-content test">
                                 <div class="box-category">
                                     <ul class="menu">
@@ -243,9 +259,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['74861']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['74861']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['74861']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -263,51 +278,76 @@
                     <!--main content-->
                     <div class="col-sm-9 checkout-page" id="content">
                         <ul class="breadcrumb">
-                            <li><a href="login.php"><i class="fa fa-home"></i></a></li>
+                            <li><a href="/innovarts/"><i class="fa fa-home"></i></a></li>
                             <li><a href="cart.php">Cart</a></li>
                         </ul>
-                        <h1>Shopping Cart &nbsp;(35.00kg)</h1>
+                        <span class="cart-img"><i class="fa fa-shopping-cart" style="font-size:36px"></i></span>
+                        <h1>Shopping Cart</h1>
                         <br/>
-                        <form class="shoping-cart-view">
+                <?php
+                    if (isset($_SESSION['guest_user_cart']) && !empty($_SESSION['guest_user_cart'])) {
+                        $cart_total = 0;
+                ?>
+                        <form class="cart-view">
                             <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <td class="text-center">Image</td>
-                                            <td class="text-left">Product Name</td>
-                                            <td class="text-left">Model</td>
-                                            <td class="text-left">Quantity</td>
-                                            <td class="text-right">Unit Price</td>
-                                            <td class="text-right">Total</td>
+                                            <td class="text-left">Product Description</td>
+                                            <td class="text-left">Discount</td>
+                                            <td class="text-right">Item Price</td>
+                                            <td class="text-right">Total Price</td>
+                                            <td></td>
                                         </tr>
                                     </thead>
                                     <tbody>
+                            <?php
+                                foreach($_SESSION['guest_user_cart'] as $key => $item) {
+                                    $img_src = $item['img_src'];
+                                    $query = "SELECT * FROM `innovarts`.`product` WHERE `main_img_src`='$img_src'";
+                                    $result = mysqli_query($con, $query);
+                                    if (mysqli_num_rows($result) != 0){
+                                        $row = mysqli_fetch_array($result);
+                                        $itm_id = $row['item_id'];
+                                        $name = $row['item_name'];
+                                        $price = $row['price_new'];
+                                        $price_old = $row['price_old'];
+                                        $model = $row['product_type'];
+                                    }
+                                    if(!empty($price_old)) {
+                                        $discount = ((substr($price_old, 1) - substr($price, 1))*100/substr($price_old, 1));
+                                    }
+                                    else {
+                                        $discount = "0.0";
+                                        $price_old = $price;
+                                    }
+                                    $total_discount += substr($price_old, 1) - substr($price, 1);
+                                    $cart_subtotal += substr($price_old, 1);
+                                    $cart_total += substr($price, 1);
+                            ?>
                                         <tr>
-                                            <td class="text-center"> <div class="image">
-                                                    <a href="/innovarts/product/artwork/74861/"><img class="img-thumbnail" src="/innovarts/product/artwork/74861/main.jpg" width="100"></a></div>
+                                            <td class="text-center"><div class="image">
+                                                <a href="<?php echo dirname($img_src);?>"><img class="img-thumbnail" src="<?php echo $img_src;?>" width="100"></a></div>
                                             </td>
-                                            <td class="text-left"><a href="single-product.php">Texture Design</a>
+                                            <td class="text-left"><a href="<?php echo dirname($img_src);?>"><?php echo $name;?></a>
                                                 <br>
-                                                <small>Color: black</small>
+                                                <small>Frame: None</small>
                                                 <br>
                                                 <small>Size: Medium</small>
                                                 <br>
-                                                <small>Reward Points: 200</small>
+                                                <small>Model: <?php echo $model;?></small>
                                             </td>
-                                            <td class="text-left">Product 3</td>
-                                            <td class="text-center">
-                                                <div style="max-width: 200px;" class="input-group btn-block">
-                                                    <p class="clearfix">
-                                                        <input type="text" id="cart-q" class="form-control cart-q" size="1" value="1"></p>
-                                                    <div>
-                                                        <button class="btn btn-custom"  type="submit" ><i class="fa fa-refresh"></i></button>
-                                                        <button class="btn btn-custom"  type="button" ><i class="fa fa-times-circle"></i></button>
-                                                    </div>
-                                                </div>
+                                            <td class="text-left discount"><?php echo number_format((float)$discount, 1)."%";?></td>
+                                            <td class="text-right"><div><?php echo $price_old;?></div></td>
+                                            <td class="text-right"><div class="price-total"><strong><?php echo $price;?></strong></div></td>
+                                            <td class="item-remove text-center">
+                                                <a href="javascript:void(0)" class="item-remove" title="Remove">
+                                                    <i class="fa fa-trash-o" style="font-size:24px;cursor: pointer;"></i>
+                                                </a>
                                             </td>
-                                            <td class="text-right"><div class="price">$194.50</div></td>
-                                            <td class="text-right"><div class="price price-total">$194.50</div></td>
                                         </tr>
+                            <?php   }   ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -388,7 +428,6 @@
                                             </div>
                                             <input type="button" class="btn btn-custom"  id="button-quote" value="Get Quotes">
                                         </form>
-
                                     </div>
                                 </div>
                             </div>
@@ -397,29 +436,51 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <table class="table table-bordered">
-                                    <tbody><tr>
-                                            <td class="text-right"><strong>Sub-Total:</strong></td>
-                                            <td class="text-right"><div class="price">$1,034.50</div></td>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-right" style="width: 52%;"><strong>Subtotal</strong></td>
+                                            <td class="text-right"><div><?php echo "$".number_format((float)$cart_subtotal, 2);?></div></td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right"><strong>Eco Tax (-2.00):</strong></td>
-                                            <td class="text-right"><div class="price">$2.00</div></td>
+                                            <td class="text-right"><strong>Discounted Amount</strong></td>
+                                            <td class="text-right"><div><?php echo "$".number_format((float)$total_discount, 2);?></div></td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right"><strong>VAT (20%):</strong></td>
-                                            <td class="text-right"><div class="price">$206.90</div></td>
+                                            <td class="text-right"><strong>GST</strong></td>
+                                            <td class="text-right"><div>$0.00</div></td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right"><strong>Total:</strong></td>
-                                            <td class="text-right"><div class="price">$1,243.40</div></td>
+                                            <td class="text-right"><strong>Total Due</strong></td>
+                                            <td class="text-right"><div><strong><?php echo "$".number_format((float)$cart_total, 2);?><strong></div></td>
                                         </tr>
                                     </tbody></table>
                             </div>
                         </div>
                         <div class="buttons">
-                            <div class="pull-left"><a class="btn btn-custom" href="product.php">Continue Shopping</a></div>
+                            <div class="pull-left"><a class="btn btn-custom" href="product.php">Return to Shop</a></div>
                             <div class="pull-right"><a class="btn btn-custom" href="checkout.php">Checkout</a></div>
                         </div>
+                <?php
+                    }
+                    else {
+                ?>
+                        <form class="cart-view">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr id="cart-empty">
+                                            <td class="text-center" style="padding: 16px;">
+                                                <strong>Your cart is currently empty!</strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                        <div class="buttons">
+                            <div class="pull-left"><a class="btn btn-custom" href="product.php">Return to Shop</a></div>
+                        </div>
+            <?php   }   ?>
                     </div>
                     <!--end main content-->
                 </div>

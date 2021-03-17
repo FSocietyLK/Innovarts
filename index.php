@@ -1,3 +1,4 @@
+<?php require 'connect.php';?>
 <?php if (!isset($_SESSION)) session_start();?>
 <!DOCTYPE html>
 <html>
@@ -80,7 +81,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="index.php"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -110,7 +111,7 @@
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li class="active"><a href="index.php">Home</a></li>
+                                        <li class="active"><a href="/innovarts/">Home</a></li>
                                         <li><a>About Us</a></li>
                                         <li><a href="product.php">Gallery</a></li>
                                         <li><a>Contact</a></li>
@@ -122,7 +123,7 @@
                     <div class="col-md-2 col-sm-3 col-xs-5 leftside-remove-space">
                         <div class="btn-group btn-block box-cart">
                             <div id="cart"><img src="images/shopping-cart.png" width="30"/></div>
-                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count"><?php echo count($_SESSION['guest_user_cart']);?></span> Items <i class="fa fa-caret-down"></i></span></a>
+                            <a class="dropdown-toggle" id="dropdown-toggle"><span><span id="item-count"><?php echo count($_SESSION['guest_user_cart']);?></span> Items <i class="fa fa-caret-down"></i></span></a>
                             <ul class="dropdown-menu pull-right btn-block cartView" id="dropdown-menu">
                                 <li>
 									<div class="cart-upper">
@@ -136,12 +137,12 @@
                                         ?>
                                                 <tr id="cart-item<?php echo $key;?>">
                                                     <td class="text-center item-img">
-                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                        <a href="<?php echo dirname($item['img_src']);?>"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
                                                     </td>
-                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left"><a href="<?php echo dirname($item['img_src']);?>" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
                                                     <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
                                                     <td class="product-remove text-center">
-                                                        <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
+                                                        <a href="javascript:void(0);" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
                                                     </td>
                                                 </tr>
                                         <?php   }
@@ -154,8 +155,8 @@
 												</tr>
                                     <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
-													<td class="text-center" colspan="4" style="padding-top: 16px;">
-														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
+													<td class="text-center" colspan="4">
+														<strong>Your cart is empty!</strong>
 													</td>
 												</tr>
                                     <?php   }   ?>
@@ -186,6 +187,21 @@
         <!--middle content-->
         <div id="container">
             <div class="container">
+            <?php
+                if (isset($_SESSION['guest_user_cart']) && !empty($_SESSION['guest_user_cart'])) {
+                    $item_id = array();
+                    foreach ($_SESSION['guest_user_cart'] as $key => $item) {
+                        $img_src = $item['img_src'];
+                        $query = "SELECT `item_id` FROM `innovarts`.`product` WHERE `main_img_src`='$img_src'";
+                        $result = mysqli_query($con, $query);
+                        if (mysqli_num_rows($result) != 0){
+                            $row = mysqli_fetch_array($result);
+                            $id = $row['item_id'];
+                            $item_id[$id] = true;
+                        }
+                    }
+                }
+            ?>
                 <div class="row">
                     <!--left sidebar---->
                     <aside  class="col-sm-3 left-sidebar">
@@ -270,16 +286,15 @@
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                                 <div class="image"><a href="/innovarts/product/artwork/53193/"><img src="/innovarts/product/artwork/53193/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
-                                                    <div class="product-name"><a href="single-product.php">Texture Design</a></div>
+                                                    <div class="product-name"><a href="/innovarts/product/artwork/53193/">Texture Design</a></div>
                                                     <div class="price">
                                                         <span class="price-new">$35.90</span>
                                                         <span class="price-old"></span>
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['53193']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['53193']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['53193']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -292,16 +307,15 @@
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                                 <div class="image"><a href="/innovarts/product/artwork/74861/"><img src="/innovarts/product/artwork/74861/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
-                                                    <div class="product-name"><a href="single-product.php">Texture Design</a></div>
+                                                    <div class="product-name"><a href="/innovarts/product/artwork/74861/">Texture Design</a></div>
                                                     <div class="price">
                                                         <span class="price-new">$45.90</span>
                                                         <span class="price-old"></span>
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['74861']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['74861']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['74861']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -321,9 +335,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['47818']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['47818']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['47818']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -336,16 +349,15 @@
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                                 <div class="image"><a href="/innovarts/product/artwork/27344/"><img src="/innovarts/product/artwork/27344/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
-                                                    <div class="product-name"><a href="single-product.php">Texture Gallery Design</a></div>
+                                                    <div class="product-name"><a href="/innovarts/product/artwork/27344/">Texture Gallery Design</a></div>
                                                     <div class="price">
                                                         <span class="price-new">$60.90</span>
                                                         <span class="price-old"></span>
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['27344']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['27344']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['27344']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -359,16 +371,15 @@
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                                 <div class="image"><a href="/innovarts/product/artwork/55307/"><img src="/innovarts/product/artwork/55307/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
-                                                    <div class="product-name"><a href="single-product.php">Texture Design</a></div>
+                                                    <div class="product-name"><a href="/innovarts/product/artwork/55307/">Texture Design</a></div>
                                                     <div class="price">
                                                         <span class="price-new">$85.90</span>
                                                         <span class="price-old"></span>
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['55307']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['55307']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['55307']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -381,16 +392,15 @@
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                                 <div class="image"><a href="/innovarts/product/artwork/68418/"><img src="/innovarts/product/artwork/68418/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
-                                                    <div class="product-name"><a href="single-product.php">Smart Painting</a></div>
+                                                    <div class="product-name"><a href="/innovarts/product/artwork/68418/">Smart Painting</a></div>
                                                     <div class="price">
                                                         <span class="price-new">$95.90</span>
                                                         <span class="price-old"></span>
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['68418']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['68418']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['68418']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -457,16 +467,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/21083/"><img src="/innovarts/product/artwork/21083/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Texture Design</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/21083/">Texture Design</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$50.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['21083']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['21083']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['21083']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -479,16 +488,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/25327/"><img src="/innovarts/product/artwork/25327/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Laterica</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/25327/">Laterica</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$40.00</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['25327']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['25327']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['25327']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -501,16 +509,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/29968/"><img src="/innovarts/product/artwork/29968/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Smart Paint</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/29968/">Smart Paint</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$35.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['29968']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['29968']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['29968']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -523,16 +530,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/33312/"><img src="/innovarts/product/artwork/33312/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php"> Folk Art </a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/33312/"> Folk Art </a></div>
                                                 <div class="price">
                                                     <span class="price-new">$70.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['33312']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['33312']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['33312']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -545,16 +551,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/33660/"><img src="/innovarts/product/artwork/33660/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Texture Pattern</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/33660/">Texture Pattern</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$55.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['33660']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['33660']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['33660']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -567,16 +572,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/50773/"><img src="/innovarts/product/artwork/50773/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Easy Paint</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/50773/">Easy Paint</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$28.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['50773']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['50773']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['50773']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -589,16 +593,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/51986/"><img src="/innovarts/product/artwork/51986/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Texture Design</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/51986/">Texture Design</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$24.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['51986']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['51986']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['51986']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -610,16 +613,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/52873/"><img src="/innovarts/product/artwork/52873/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">HD Paint</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/52873/">HD Paint</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$54.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['52873']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['52873']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['52873']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -631,16 +633,15 @@
                                             <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                             <div class="image"><a href="/innovarts/product/artwork/22210/"><img src="/innovarts/product/artwork/22210/main.jpg" class="img-responsive"></a></div>
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Auscipit Dissentiet</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/22210/">Auscipit Dissentiet</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$24.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['22210']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['22210']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['22210']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -666,16 +667,15 @@
                                             <div class="image"><a href="/innovarts/product/artwork/65286/"><img src="/innovarts/product/artwork/65286/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Paint Design</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/65286/">Paint Design</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$35.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['65286']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['65286']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['65286']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -689,16 +689,15 @@
                                             <div class="image"><a href="/innovarts/product/artwork/76253/"><img src="/innovarts/product/artwork/76253/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Paint Hard</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/76253/">Paint Hard</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$40.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['76253']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['76253']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['76253']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -712,16 +711,15 @@
                                             <div class="image"><a href="/innovarts/product/artwork/92948/"><img src="/innovarts/product/artwork/92948/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Paint Easy Note</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/92948/">Paint Easy Note</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$50.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['92948']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['92948']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['92948']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -736,16 +734,15 @@
                                             <div class="image"><a href="/innovarts/product/artwork/27344/"><img src="/innovarts/product/artwork/27344/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Paint Design Wall Art</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/27344/">Paint Design Wall Art</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$30.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['27344']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['27344']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['27344']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -759,16 +756,15 @@
                                             <div class="image"><a href="/innovarts/product/artwork/25512/"><img src="/innovarts/product/artwork/25512/main.jpg" class="img-responsive"></a></div>
 
                                             <div class="caption">
-                                                <div class="product-name"><a href="single-product.php">Easy Painting</a></div>
+                                                <div class="product-name"><a href="/innovarts/product/artwork/25512/">Easy Painting</a></div>
                                                 <div class="price">
                                                     <span class="price-new">$35.90</span>
                                                     <span class="price-old"></span>
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['25512']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['25512']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['25512']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>

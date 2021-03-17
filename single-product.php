@@ -1,5 +1,6 @@
 <?php require 'connect.php';?>
-<?php session_start();?>
+<?php if (!isset($_SESSION)) session_start();?>
+<?php if(basename($_SERVER['REQUEST_URI']) == "single-product.php") header("location: /innovarts/");;?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -83,7 +84,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="/innovarts/index.php"><img src="/innovarts/images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/"><img src="/innovarts/images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -111,7 +112,7 @@
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li><a href="/innovarts/index.php">Home</a></li>
+                                        <li><a href="/innovarts/">Home</a></li>
                                         <li><a>About Us</a></li>
                                         <li><a href="/innovarts/product.php">Gallery</a></li>                               
                                         <li><a>Contact</a></li>
@@ -137,9 +138,9 @@
                                         ?>
                                                 <tr id="cart-item<?php echo $key;?>">
                                                     <td class="text-center item-img">
-                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                        <a href="<?php echo dirname($item['img_src']);?>"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
                                                     </td>
-                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left"><a href="<?php echo dirname($item['img_src']);?>" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
                                                     <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
                                                     <td class="product-remove text-center">
                                                         <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
@@ -155,8 +156,8 @@
 												</tr>
                                     <?php   if (empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
-													<td class="text-center" colspan="4" style="padding-top: 16px;">
-														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
+													<td class="text-center" colspan="4">
+														<strong>Your cart is empty!</strong>
 													</td>
 												</tr>
                                     <?php   }   ?>
@@ -187,6 +188,21 @@
         <!--middle content-->
         <div id="container">
             <div class="container">
+            <?php
+                if (isset($_SESSION['guest_user_cart']) && !empty($_SESSION['guest_user_cart'])) {
+                    $item_id = array();
+                    foreach ($_SESSION['guest_user_cart'] as $key => $item) {
+                        $img_src = $item['img_src'];
+                        $query = "SELECT `item_id` FROM `innovarts`.`product` WHERE `main_img_src`='$img_src'";
+                        $result = mysqli_query($con, $query);
+                        if (mysqli_num_rows($result) != 0){
+                            $row = mysqli_fetch_array($result);
+                            $id = $row['item_id'];
+                            $item_id[$id] = true;
+                        }
+                    }
+                }
+            ?>
                 <div class="row">
                     <!--left sidebar---->
                     <aside  class="col-sm-3 left-sidebar">
@@ -243,9 +259,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['36182']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['36182']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['36182']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -263,13 +278,13 @@
                     <!--main content-->
                     <div class="col-sm-9 single-product" id="content">
                         <ul class="breadcrumb">
-                            <li><a href="/innovarts/index.php"><i class="fa fa-home"></i></a></li>
+                            <li><a href="/innovarts/"><i class="fa fa-home"></i></a></li>
                             <li><a href="<?php echo $_SERVER['REQUEST_URI'];?>">Single Product</a></li>
                         </ul>
                         <div class="row product-content">
 							<?php
-								$item_id = basename($_SERVER['REQUEST_URI']);
-								$query = "SELECT * FROM `innovarts`.`product` WHERE `item_id`='$item_id'";
+								$itm_id = basename($_SERVER['REQUEST_URI']);
+								$query = "SELECT * FROM `innovarts`.`product` WHERE `item_id`='$itm_id'";
 								$result = mysqli_query($con, $query);
 								if (mysqli_num_rows($result) != 0){
                                     $row = mysqli_fetch_array($result);
@@ -298,7 +313,7 @@
                                 <h1><?php echo $item_name;?></h1>
                                 <ul class="list-unstyled product-info">
                                     <li>Product Type: <a><?php echo $product_type;?></a></li>
-                                    <li>Product Code: <?php echo $item_id;?></li>
+                                    <li>Product Code: <?php echo $itm_id;?></li>
                                     <li>Reward Points: 200</li>
                                     <li>Availability: <?php echo $availability;?></li>
                                 </ul>
@@ -428,9 +443,8 @@
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['75766']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['75766']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['75766']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -448,9 +462,8 @@
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['47818']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['47818']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['47818']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>
@@ -468,9 +481,8 @@
                                                 </div>
                                             </div>
                                             <div class="cart-button">
-                                                <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                    <span>
-                                                        Add to Cart </span>
+                                                <a class="btn btn-add-cart <?php if ($item_id['68418']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['68418']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                    <span><?php if ($item_id['68418']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </a>
                                             </div>

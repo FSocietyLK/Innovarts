@@ -1,4 +1,4 @@
-<?php session_start();?>
+<?php if (!isset($_SESSION)) session_start();?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,14 +9,14 @@
         <!--custom css-->
         <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<link href="font-awesome/css/custom.css" rel="stylesheet" type="text/css" />
         <link href="css/style.css" rel="stylesheet" type="text/css" />
         <link href="css/responsive.css" rel="stylesheet" type="text/css" />
-
         <!--js --->
         <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
         <script src="js/custom.js" type="text/javascript"></script>
-
+		<script src="js/form-validate.js" type="text/javascript"></script>
     </head>
     <body>
         <!--headerblock-->
@@ -82,7 +82,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="index.php"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -112,7 +112,7 @@
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li class="active"><a href="index.php">Home</a></li>
+                                        <li><a href="/innovarts/">Home</a></li>
                                         <li><a>About Us</a></li>
                                         <li><a href="product.php">Gallery</a></li>
                                         <li><a>Contact</a></li>
@@ -138,9 +138,9 @@
                                         ?>
                                                 <tr id="cart-item<?php echo $key;?>">
                                                     <td class="text-center item-img">
-                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                        <a href="<?php echo dirname($item['img_src']);?>"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
                                                     </td>
-                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left"><a href="<?php echo dirname($item['img_src']);?>" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
                                                     <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
                                                     <td class="product-remove text-center">
                                                         <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
@@ -156,8 +156,8 @@
 												</tr>
                                     <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
-													<td class="text-center" colspan="4" style="padding-top: 16px;">
-														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
+													<td class="text-center" colspan="4">
+														<strong>Your cart is empty!</strong>
 													</td>
 												</tr>
                                     <?php   }   ?>
@@ -223,8 +223,8 @@
                     <!--main content-->
                     <div id="content" class="col-sm-9">
                         <ul class="breadcrumb">
-                            <li><a href="index.php"><i class="fa fa-home"></i></a></li>
-                            <li><a>Login</a></li>
+                            <li><a href="/innovarts/"><i class="fa fa-home"></i></a></li>
+                            <li><a href="login.php">Login</a></li>
                         </ul>
                         <div class="row">
                             <div class="col-sm-6">
@@ -243,23 +243,34 @@
                             <div class="col-sm-6">
                                 <div class="well">
                                     <div class="heading-text">
-                                        <i class="fa fa-key"></i>
+                                        <i class="fa fc-key"></i>
                                         <h2>Returning Customer</h2>
                                         <strong>I am a returning customer</strong>
-                                        <hr/>   
+                                        <hr/>
                                     </div>
+									<div class="alert alert-danger alert-dismissible" style="display: none;">
+										<button type="button" class="close" aria-hidden="true">&times;</button>
+										<strong>Login failed!</strong> The email or password you entered is incorrect. Please try gain.
+									</div>
                                     <form>
                                         <div class="form-group">
-                                            <label for="input-email" class="control-label">E-Mail Address</label>
-                                            <input type="text" class="form-control" id="input-email" placeholder="E-Mail Address" value="" name="email">
+                                            <label for="input-email" class="label-email">Email Address</label>
+                                            <div class="email-wrapper">
+												<input type="text" class="form-control" id="input-email" placeholder="&#61447;  Email" value="" name="email">
+											</div>
+											<small class="help-block"></small>
                                         </div>
                                         <div class="form-group">
-                                            <label for="input-password" class="control-label">Password</label>
-                                            <input type="password" class="form-control" id="input-password" placeholder="Password" value="" name="password">
-                                            <br>
-                                            <a>Forgotten Password</a>
+                                            <label for="input-password" class="label-password">Password</label>
+                                            <div class="password-wrapper">
+												<input type="password" class="form-control" id="input-password" placeholder="&#61475;  Password" value="" name="password">
+                                            </div>
+											<small class="help-block"></small>
                                         </div>
-                                        <input type="submit" class="btn btn-custom" value="Login">
+										<div class="form-group">
+											<a>Forgotten password?</a>
+										</div>
+                                        <input type="submit" class="btn btn-custom" id="login" value="Login">
                                     </form>
                                 </div>
                             </div>

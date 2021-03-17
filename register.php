@@ -1,4 +1,4 @@
-<?php session_start();?>
+<?php if (!isset($_SESSION)) session_start();?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -82,7 +82,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="index.php"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -112,7 +112,7 @@
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li class="active"><a href="index.php">Home</a></li>
+                                        <li><a href="/innovarts/">Home</a></li>
                                         <li><a>About Us</a></li>
                                         <li><a href="product.php">Gallery</a></li>
                                         <li><a>Contact</a></li>
@@ -138,9 +138,9 @@
                                         ?>
                                                 <tr id="cart-item<?php echo $key;?>">
                                                     <td class="text-center item-img">
-                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                        <a href="<?php echo dirname($item['img_src']);?>"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
                                                     </td>
-                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left"><a href="<?php echo dirname($item['img_src']);?>" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
                                                     <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
                                                     <td class="product-remove text-center">
                                                         <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
@@ -156,8 +156,8 @@
 												</tr>
                                     <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
-													<td class="text-center" colspan="4" style="padding-top: 16px;">
-														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
+													<td class="text-center" colspan="4">
+														<strong>Your cart is empty!</strong>
 													</td>
 												</tr>
                                     <?php   }   ?>
@@ -223,12 +223,12 @@
 
                     <!--main content-->
                     <div class="col-sm-9" id="content"><ul class="breadcrumb">
-                            <li><a href="index.php"><i class="fa fa-home"></i></a></li>
-                            <li><a>Register</a></li>
+                            <li><a href="/innovarts/"><i class="fa fa-home"></i></a></li>
+                            <li><a href="register.php">Register</a></li>
                         </ul>
                         <h2>Register Account</h2>
-                        <p>If you already have an account with us, please login at the 
-                            <a href="login.php">login page</a>.</p>
+                        <p>If you already have an account with us, please 
+                            <a href="login.php">login</a>.</p>
                         <form class="form-horizontal">
                             <fieldset id="account">
                                 <legend>Your Personal Details</legend>

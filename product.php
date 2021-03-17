@@ -1,4 +1,5 @@
-<?php session_start();?>
+<?php require 'connect.php';?>
+<?php if (!isset($_SESSION)) session_start();?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -80,7 +81,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="index.php"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -110,7 +111,7 @@
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li><a href="index.php">Home</a></li>
+                                        <li><a href="/innovarts/">Home</a></li>
                                         <li><a>About Us</a></li>
                                         <li class="active"><a href="product.php">Gallery</a></li>
                                         <li><a>Contact</a></li>
@@ -136,9 +137,9 @@
                                         ?>
                                                 <tr id="cart-item<?php echo $key;?>">
                                                     <td class="text-center item-img">
-                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
+                                                        <a href="<?php echo dirname($item['img_src']);?>"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
                                                     </td>
-                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
+                                                    <td class="text-left"><a href="<?php echo dirname($item['img_src']);?>" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
                                                     <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
                                                     <td class="product-remove text-center">
                                                         <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
@@ -154,8 +155,8 @@
 												</tr>
                                     <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
 												<tr id="cart-empty">
-													<td class="text-center" colspan="4" style="padding-top: 16px;">
-														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
+													<td class="text-center" colspan="4">
+														<strong>Your cart is empty!</strong>
 													</td>
 												</tr>
                                     <?php   }   ?>
@@ -186,6 +187,21 @@
         <!--middle content-->
         <div id="container">
             <div class="container">
+            <?php
+                if (isset($_SESSION['guest_user_cart']) && !empty($_SESSION['guest_user_cart'])) {
+                    $item_id = array();
+                    foreach ($_SESSION['guest_user_cart'] as $key => $item) {
+                        $img_src = $item['img_src'];
+                        $query = "SELECT `item_id` FROM `innovarts`.`product` WHERE `main_img_src`='$img_src'";
+                        $result = mysqli_query($con, $query);
+                        if (mysqli_num_rows($result) != 0){
+                            $row = mysqli_fetch_array($result);
+                            $id = $row['item_id'];
+                            $item_id[$id] = true;
+                        }
+                    }
+                }
+            ?>
                 <div class="row">
                     <!--left sidebar---->
                     <aside  class="col-sm-3 left-sidebar">
@@ -243,9 +259,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['40784']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['40784']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['40784']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -260,16 +275,15 @@
                                                 <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
                                                 <div class="image"><a href="/innovarts/product/artwork/27344/"><img src="/innovarts/product/artwork/27344/main.jpg" class="img-responsive"></a></div>
                                                 <div class="caption">
-                                                    <div class="product-name"><a>Soft Panting </a></div>
+                                                    <div class="product-name"><a>Soft Panting</a></div>
                                                     <div class="price">
                                                         <span class="price-new">$34.90</span>
                                                         <span class="price-old"></span>
                                                     </div>
                                                 </div>
                                                 <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
+                                                    <a class="btn btn-add-cart <?php if ($item_id['27344']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['27344']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                                        <span><?php if ($item_id['27344']) echo 'View Cart'; else echo 'Add to Cart';?></span>
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </a>
                                                 </div>
@@ -288,14 +302,14 @@
                     <!--main content-->
                     <div class="col-sm-9" id="content">         
                         <ul class="breadcrumb">
-                            <li><a href="index.php"><i class="fa fa-home"></i></a></li>
+                            <li><a href="/innovarts/"><i class="fa fa-home"></i></a></li>
                             <li><a>Gallery</a></li>
                         </ul>
                         <h2></h2>
                         <div class="row ref-search">
                             <div class="col-sm-2 col-xs-12"><img class="img-thumbnail" src="/innovarts/product/artwork/33660/main.jpg"></div>
-                            <div class="col-sm-10 col-xs-12"><p>
-                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting.</p>
+                            <div class="col-sm-10 col-xs-12">
+                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting.</p>
                             </div>
                         </div>
                         <hr>
@@ -367,16 +381,16 @@
                                         <a href="/innovarts/product/artwork/50773/"><img class="img-responsive" src="/innovarts/product/artwork/50773/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
-                                            <h4><a href="single-product.php">Painting</a></h4>
-                                            <p>
-                                                Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                                            <h4><a href="/innovarts/product/artwork/50773/">Painting</a></h4>
+                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                                             <p class="price">
-                                                <span class="price-new">$110.00</span> <span class="price-old"></span>
+                                                <span class="price-new">$110.00</span><span class="price-old"></span>
                                                 <span class="price-tax"></span>
                                             </p>
                                         </div>
                                         <div class="button-group">
-                                            <a class="btn special-button add-cart-item" href="javascript:void(0);"><span>Add to Cart</span><i class="fa fa-shopping-cart"></i></a>
+                                            <a class="btn special-button <?php if ($item_id['50773']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['50773']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                            <span><?php if ($item_id['50773']) echo 'View Cart'; else echo 'Add to Cart';?></span><i class="fa fa-shopping-cart"></i></a>
                                             <button class="btn special-button" type="button"><i class="fa fa-heart"></i></button>
                                             <button class="btn special-button" type="button"><i class="fa fa-exchange"></i></button>
                                         </div>
@@ -389,16 +403,16 @@
                                         <a href="/innovarts/product/artwork/53351/"><img class="img-responsive" src="/innovarts/product/artwork/53351/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
-                                            <h4><a href="single-product.php">Laterica</a></h4>
-                                            <p>
-                                                Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                                            <h4><a href="/innovarts/product/artwork/53351/">Laterica</a></h4>
+                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                                             <p class="price">
                                                 <span class="price-new">$150.00</span> <span class="price-old"></span>
                                                 <span class="price-tax"></span>
                                             </p>
                                         </div>
                                         <div class="button-group">
-                                            <a class="btn special-button add-cart-item" href="javascript:void(0);"><span>Add to Cart</span><i class="fa fa-shopping-cart"></i></a>
+                                            <a class="btn special-button <?php if ($item_id['53351']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['53351']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                            <span><?php if ($item_id['53351']) echo 'View Cart'; else echo 'Add to Cart';?></span><i class="fa fa-shopping-cart"></i></a>
                                             <button class="btn special-button" type="button"><i class="fa fa-heart"></i></button>
                                             <button class="btn special-button" type="button"><i class="fa fa-exchange"></i></button>
                                         </div>
@@ -411,16 +425,16 @@
                                         <a href="/innovarts/product/artwork/88310/"><img class="img-responsive" src="/innovarts/product/artwork/88310/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
-                                            <h4><a href="single-product.php">Painting Softness</a></h4>
-                                            <p>
-                                                Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                                            <h4><a href="/innovarts/product/artwork/88310/">Painting Softness</a></h4>
+                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                                             <p class="price">
-                                                <span class="price-new">$200.00</span> <span class="price-old"></span>
+                                                <span class="price-new">$200.00</span><span class="price-old"></span>
                                                 <span class="price-tax"></span>
                                             </p>
                                         </div>
                                         <div class="button-group">
-                                            <a class="btn special-button add-cart-item" href="javascript:void(0);"><span>Add to Cart</span><i class="fa fa-shopping-cart"></i></a>
+                                            <a class="btn special-button <?php if ($item_id['88310']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['88310']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                            <span><?php if ($item_id['88310']) echo 'View Cart'; else echo 'Add to Cart';?></span><i class="fa fa-shopping-cart"></i></a>
                                             <button class="btn special-button" type="button"><i class="fa fa-heart"></i></button>
                                             <button class="btn special-button" type="button"><i class="fa fa-exchange"></i></button>
                                         </div>
@@ -433,16 +447,16 @@
                                         <a href="/innovarts/product/artwork/76253/"><img class="img-responsive" src="/innovarts/product/artwork/76253/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
-                                            <h4><a href="single-product.php">Painting Like</a></h4>
-                                            <p>
-                                                Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                                            <h4><a href="/innovarts/product/artwork/76253/">Painting Like</a></h4>
+                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                                             <p class="price">
                                                 <span class="price-new">$110.00</span> <span class="price-old"></span>
                                                 <span class="price-tax"></span>
                                             </p>
                                         </div>
                                         <div class="button-group">
-                                            <a class="btn special-button add-cart-item" href="javascript:void(0);"><span>Add to Cart</span><i class="fa fa-shopping-cart"></i></a>
+                                            <a class="btn special-button <?php if ($item_id['76253']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['76253']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                            <span><?php if ($item_id['76253']) echo 'View Cart'; else echo 'Add to Cart';?></span><i class="fa fa-shopping-cart"></i></a>
                                             <button class="btn special-button" type="button"><i class="fa fa-heart"></i></button>
                                             <button class="btn special-button" type="button"><i class="fa fa-exchange"></i></button>
                                         </div>
@@ -455,16 +469,16 @@
                                         <a href="/innovarts/product/artwork/65286/"><img class="img-responsive" src="/innovarts/product/artwork/65286/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
-                                            <h4><a href="single-product.php">Texture Design</a></h4>
-                                            <p>
-                                                Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                                            <h4><a href="/innovarts/product/artwork/65286/">Texture Design</a></h4>
+                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                                             <p class="price">
                                                 <span class="price-new">$150.00</span> <span class="price-old"></span>
                                                 <span class="price-tax"></span>
                                             </p>
                                         </div>
                                         <div class="button-group">
-                                            <a class="btn special-button add-cart-item" href="javascript:void(0);"><span>Add to Cart</span><i class="fa fa-shopping-cart"></i></a>
+                                            <a class="btn special-button <?php if ($item_id['65286']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['65286']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                            <span><?php if ($item_id['65286']) echo 'View Cart'; else echo 'Add to Cart';?></span><i class="fa fa-shopping-cart"></i></a>
                                             <button class="btn special-button" type="button"><i class="fa fa-heart"></i></button>
                                             <button class="btn special-button" type="button"><i class="fa fa-exchange"></i></button>
                                         </div>
@@ -477,16 +491,16 @@
                                         <a href="/innovarts/product/artwork/74861/"><img class="img-responsive" src="/innovarts/product/artwork/74861/main.jpg"></a></div>
                                     <div>
                                         <div class="caption">
-                                            <h4><a href="single-product.php">HD Paint</a></h4>
-                                            <p>
-                                                Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                                            <h4><a href="/innovarts/product/artwork/74861/">HD Paint</a></h4>
+                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                                             <p class="price">
                                                 <span class="price-new">$250.00</span> <span class="price-old"></span>
                                                 <span class="price-tax"></span>
                                             </p>
                                         </div>
                                         <div class="button-group">
-                                            <a class="btn special-button add-cart-item" href="javascript:void(0);"><span>Add to Cart</span><i class="fa fa-shopping-cart"></i></a>
+                                            <a class="btn special-button <?php if ($item_id['74861']) echo 'view-cart-items'; else echo 'add-cart-item';?>" href="<?php if ($item_id['74861']) echo '/innovarts/cart.php'; else echo 'javascript:void(0);';?>">
+                                            <span><?php if ($item_id['74861']) echo 'View Cart'; else echo 'Add to Cart';?></span><i class="fa fa-shopping-cart"></i></a>
                                             <button class="btn special-button" type="button"><i class="fa fa-heart"></i></button>
                                             <button class="btn special-button" type="button"><i class="fa fa-exchange"></i></button>
                                         </div>

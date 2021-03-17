@@ -80,7 +80,7 @@
             <div class="container">
                 <div class="leftside">
                     <div class="logo">
-                        <a href="index.php"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
+                        <a href="/innovarts/"><img src="images/logo.png" alt="art-design" class="img-responsive" width="200"/></a>
                     </div>
                 </div>
                 <div class="rightside">
@@ -96,7 +96,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-3 col-sm-2"></div>
-                    <div class="col-md-7 col-sm-7 col-xs-7 rightside-add-space"> 
+                    <div class="col-lg-9 lg-9 col-md-9 md-9 col-sm-10 sm-10 rightside-add-space"> 
                         <nav class="navbar navbar-inverse menu-bar">
                             <div class="container-fluid">
                                 <div class="navbar-header">
@@ -106,11 +106,11 @@
                                         <span class="icon-bar"></span>
                                     </button>
 
-                                    <!--                                    <a class="navbar-brand" href="#">WebSiteName</a>-->
+                                    <!--<a class="navbar-brand" href="#">WebSiteName</a>-->
                                 </div>
                                 <div class="collapse navbar-collapse" id="myNavbar">
                                     <ul class="nav navbar-nav">
-                                        <li class="active"><a href="index.php">Home</a></li>
+                                        <li><a href="/innovarts/">Home</a></li>
                                         <li><a>About Us</a></li>
                                         <li><a href="product.php">Gallery</a></li>
                                         <li><a>Contact</a></li>
@@ -118,65 +118,6 @@
                                 </div>
                             </div>
                         </nav>
-                    </div>
-                    <div class="col-md-2 col-sm-3 col-xs-5 leftside-remove-space">
-                        <div class="btn-group btn-block box-cart">
-                            <div id="cart"><img src="images/shopping-cart.png" width="30"/></div>
-                            <a class="dropdown-toggle" id="dropdown-toggle"> <span><span id="item-count"><?php echo count($_SESSION['guest_user_cart']);?></span> Items <i class="fa fa-caret-down"></i></span></a>
-                            <ul class="dropdown-menu pull-right btn-block cartView" id="dropdown-menu">
-                                <li>
-									<div class="cart-upper">
-										<table class="table cart-items" id="cart-items">
-											<tbody>
-                                        <?php
-                                            if(!empty($_SESSION['guest_user_cart'])) {
-                                                $cart_total = 0;
-                                                foreach($_SESSION['guest_user_cart'] as $key => $item) {
-                                                    $cart_total += substr($item['price'], 1);
-                                        ?>
-                                                <tr id="cart-item<?php echo $key;?>">
-                                                    <td class="text-center item-img">
-                                                        <a href="single-product.php"><img class="img-responsive" title="<?php echo $item['name'];?>" src="<?php echo $item['img_src'];?>" width="50"></a>
-                                                    </td>
-                                                    <td class="text-left"><a href="single-product.php" class="view_cart cart-product-name"><?php echo $item['name'];?></a></td>
-                                                    <td class="text-left cart-item-price"><?php echo $item['price'];?></td>
-                                                    <td class="product-remove text-center">
-                                                        <a href="javascript:void(0)" class="product-remove" title="Remove"><i class="fa fa-times"></i></a>
-                                                    </td>
-                                                </tr>
-                                        <?php   }
-                                            }   ?>
-												<tr id="cart-total" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
-													<td class="text-left cart-total"><strong>Total</strong></td>
-													<td></td>
-													<td class="text-left cart-total total-price"><strong><?php if(!empty($_SESSION['guest_user_cart'])) echo "$".number_format((float)$cart_total, 2); else echo "$0.00"; ?></strong></td>
-													<td></td>
-												</tr>
-                                    <?php   if(empty($_SESSION['guest_user_cart'])) {   ?>
-												<tr id="cart-empty">
-													<td class="text-center" colspan="4" style="padding-top: 16px;">
-														<strong style="text-transform: uppercase; cursor: default;">Your cart is empty!</strong>
-													</td>
-												</tr>
-                                    <?php   }   ?>
-                                            </tbody></table>
-									</div>
-									<div style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;'; else echo 'height: 12px;';?>"></div>
-									<div class="cart-lower">
-                                        <a href="cart.php" class="btn btn-add-cart" id="view-cart" type="button" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 260px;';?>">
-                                            <span style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 185px;';?>">
-                                                View </span>
-                                            <i class="fa fa-shopping-cart" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'width: 75px;';?>"></i>
-                                        </a>
-                                        <a href="checkout.php" class="btn btn-add-cart" id="checkout" type="button" style="<?php if(empty($_SESSION['guest_user_cart'])) echo 'display: none;';?>">
-                                            <span>
-                                                Checkout </span>
-                                            <i class="fa fa-share"></i> 
-                                        </a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -222,50 +163,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="box special">
-                            <div class="box-heading">
-                                <h3>Special</h3>
-                            </div>
-                            <div class="box-content">
-                                <div class="product-layout">
-                                    <ul class="list-unstyled">
-                                        <li>
-                                            <div class="product-thumb transiction">
-                                                <a class="compare-button"><i class="fa fa-retweet"></i></a>
-                                                <a class="wishlist-button"><i class="fa fa-heart-o"></i></a>
-                                                <div class="image"><a href="single-product.php"><img src="images/img1.jpg" class="img-responsive"></a></div>
-                                                <div class="caption">
-                                                    <div class="product-name"><a>Texture design</a></div>
-                                                    <div class="price">
-                                                        <span class="price-new">$34.90</span>
-                                                        <span class="price-old">$49.50</span>
-                                                    </div>
-                                                </div>
-                                                <div class="cart-button">
-                                                    <a class="btn btn-add-cart add-cart-item" href="javascript:void(0);">
-                                                        <span>
-                                                            Add to Cart </span>
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                    </a>
-                                                </div>
-                                                <div class="clearfix"></div>
-                                            </div>
-                                        </li>
-
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
                     </aside>
                     <!--end sidebar-->
 
                     <!--main content-->
                     <div class="col-sm-9 checkout-page" id="content">
                         <ul class="breadcrumb">
-                            <li><a href="index.php"><i class="fa fa-home"></i></a></li>
-                            <li><a href="checkout.php">CheckOut</a></li>
-                        </ul> 
-                        <h2 class="text-center">Checkout</h2>
+                            <li><a href="/innovarts/"><i class="fa fa-home"></i></a></li>
+                            <li><a href="checkout.php">Checkout</a></li>
+                        </ul>
+                        <span class="checkout-img">
+                            <i class="fa fa-shopping-cart" style="font-size:36px"></i>
+                            <i class="fa fa-circle"></i>
+                            <i class="fa fa-check"></i>
+                        </span>
+                        <h1>Checkout</h2>
                         <div id="accordion" class="panel-group">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
