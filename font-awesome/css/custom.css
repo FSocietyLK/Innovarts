@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'custom-webfont';
+    src: url('../fonts/custom-webfont.eot');
+    src: url('../fonts/custom-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/custom-webfont.woff') format('woff'),
+         url('../fonts/custom-webfont.ttf') format('truetype'),
+         url('../fonts/custom-webfont.svg#custom-webfont') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+[class*='fc-']:before{
+	display: inline-block;
+	font-family: 'custom-webfont' !important;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale
+}
+.fc-key:before{content:'\0049';}
